@@ -21,6 +21,16 @@ router.post('/register', (req, res) => {
   });
 });
 
+router.get('/users/:id', (req, res) => {
+  const userId = req.params.id;
+  const query = 'SELECT id, name, email, profile_picture, role FROM users WHERE id = ?';
+  db.query(query, [userId], (err, results) => {
+    if (err) return res.status(500).json({ error: 'Database error', details: err });
+    if (results.length === 0) return res.status(404).json({ error: 'User not found' });
+    res.json(results[0]);
+  });
+});
+
 router.post('/login', (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -72,5 +82,33 @@ router.post('/logout', (req, res) => {
   });
 });
 
+
+router.put('/users/:id', (req, res) => {
+  const { name, email } = req.body;
+  const userId = req.params.id;
+
+  if (!name || !email) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+
+  const query = 'UPDATE users SET name = ?, email = ? WHERE id = ?';
+  db.query(query, [name, email, userId], (err, result) => {
+    if (err) return res.status(500).json({ error: 'Database error', details: err });
+
+    res.json({ message: 'User updated successfully' });
+  });
+});
+
+
+router.delete('/users/:id', (req, res) => {
+  const userId = req.params.id;
+
+  const deleteQuery = 'DELETE FROM users WHERE id = ?';
+  db.query(deleteQuery, [userId], (err, result) => {
+    if (err) return res.status(500).json({ error: 'Database error', details: err });
+
+    res.json({ message: 'User deleted successfully' });
+  });
+});
 
 module.exports = router;
