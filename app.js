@@ -4,6 +4,7 @@ const session = require('express-session');
 const app = express();
 const userRoutes = require('./routes/user');
 const productRoutes = require('./routes/products');
+const orderRoutes = require('./routes/orders');
 const port = 8801;
 
 app.use(session({
@@ -13,14 +14,14 @@ app.use(session({
   cookie: { secure: false } 
 }));
 
+
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); 
+app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
-
+app.use('/orders', orderRoutes);
 app.use('/users', userRoutes);
 app.use('/products', productRoutes);
-
 
 app.use((err, req, res, next) => {
   console.error(err);
